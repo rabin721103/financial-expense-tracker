@@ -4,7 +4,6 @@ import com.practice.financialtracker.model.User;
 import com.practice.financialtracker.model.UserDto;
 import com.practice.financialtracker.service.UserService;
 import com.practice.financialtracker.utils.ResponseWrapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
