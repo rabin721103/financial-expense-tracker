@@ -61,7 +61,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    @GetMapping()
+
+    @GetMapping("/allUsers")
     public ResponseEntity<ResponseWrapper<List<UserDto>>> getAllUser() {
         ResponseWrapper<List<UserDto>> response = new ResponseWrapper<>();
         try {
@@ -78,9 +79,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+
     @PutMapping("/{userId}")
-    public ResponseEntity<ResponseWrapper<UserDto>> updateUser(HttpServletRequest request, @Valid @RequestBody User user) {
-        Integer userId = (Integer) request.getAttribute("userId");
+    public ResponseEntity<ResponseWrapper<UserDto>> updateUser(@PathVariable("userId") Long userId, @Valid @RequestBody User user) {
+
         UserDto updatedUserDto = userService.updateUser(userId, user);
         ResponseWrapper<UserDto> response = new ResponseWrapper<>();
         try {

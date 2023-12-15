@@ -54,13 +54,16 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractClaim(token,  claims -> claims.get("userName", String.class));
     }
     public long extractUserId(String token) {
         return extractClaim(token, claims -> claims.get("id", Long.class));
     }
     public String extractEmail(String token) {
         return extractClaim(token, claims -> claims.get("email", String.class));
+    }
+    public String extractProfession(String token) {
+        return extractClaim(token, claims -> claims.get("profession", String.class));
     }
 
     public Date extractExpiration(String token) {
