@@ -4,17 +4,16 @@ import com.practice.financialtracker.model.User;
 import com.practice.financialtracker.model.UserDto;
 import com.practice.financialtracker.service.UserService;
 import com.practice.financialtracker.utils.ResponseWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/user")
 public class UserController {
     private final UserService userService;
 
@@ -23,7 +22,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/users/register")
+    @PostMapping("/register")
     public ResponseEntity<ResponseWrapper<UserDto>> insertUser(@Valid @RequestBody User user) {
         ResponseWrapper<UserDto> response = new ResponseWrapper<>();
         try {
@@ -40,16 +39,16 @@ public class UserController {
         }
     }
 
-    @GetMapping("users/{userId}")
-    public ResponseEntity<ResponseWrapper<User>> getUserById(@PathVariable("userId") long userId) {
-        ResponseWrapper<User> response = new ResponseWrapper<>();
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResponseWrapper<UserDto>> getUserById(@PathVariable("userId") long userId) {
+        UserDto userDto = userService.getUserById(userId);
+        ResponseWrapper<UserDto> response = new ResponseWrapper<>();
         try {
-            User user = userService.getUserById(userId);
-            if (user != null) {
+            if (userDto != null) {
                 response.setStatusCode(HttpStatus.OK.value());
-                response.setSuccess(true);
                 response.setMessage("User retrieved successfully");
-                response.setResponse(user);
+                response.setSuccess(true);
+                response.setResponse(userDto);
                 return ResponseEntity.ok(response);
             } else {
                 response.setStatusCode(HttpStatus.NOT_FOUND.value());
@@ -62,7 +61,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    @GetMapping("users")
+    @GetMapping()
     public ResponseEntity<ResponseWrapper<List<UserDto>>> getAllUser() {
         ResponseWrapper<List<UserDto>> response = new ResponseWrapper<>();
         try {
@@ -79,20 +78,21 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
-    @PutMapping("/users/{userId}")
-    public ResponseEntity<ResponseWrapper<UserDto>> updateUser(@PathVariable("userId") long userId, @Valid @RequestBody User user) {
+    @PutMapping("/{userId}")
+    public ResponseEntity<ResponseWrapper<UserDto>> updateUser(HttpServletRequest request, @Valid @RequestBody User user) {
+        Integer userId = (Integer) request.getAttribute("userId");
+        UserDto updatedUserDto = userService.updateUser(userId, user);
         ResponseWrapper<UserDto> response = new ResponseWrapper<>();
         try {
-            UserDto newUser = userService.updateUser(userId, user);
-            if (newUser != null) {
+            if (updatedUserDto.getUserId() != null) {
                 response.setStatusCode(HttpStatus.OK.value());
-                response.setSuccess(true);
                 response.setMessage("User updated successfully");
-                response.setResponse(newUser);
+                response.setSuccess(true);
+                response.setResponse(updatedUserDto);
                 return ResponseEntity.ok(response);
             } else {
                 response.setStatusCode(HttpStatus.NOT_FOUND.value());
-                response.setMessage("User not Found");
+                response.setMessage("User not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 

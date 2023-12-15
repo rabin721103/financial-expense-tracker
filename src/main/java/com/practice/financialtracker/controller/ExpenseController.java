@@ -121,9 +121,15 @@ public class ExpenseController {
     }
 
     @DeleteMapping(path = "{expenseId}")
-    public void deleteExpenseById(@PathVariable("expenseId") Long expenseId) {
+    public ResponseEntity<ResponseWrapper<Expense>> deleteExpenseById(@PathVariable("expenseId") Long expenseId) {
         try {
             expenseService.deleteExpenseById(expenseId);
+            ResponseWrapper<Expense> response = new ResponseWrapper<>();
+            response.setSuccess(true);
+            response.setStatusCode(200);
+            response.setMessage("Expense deleted successfully");
+            response.setResponse(response.getResponse());
+            return ResponseEntity.ok(response);
         } catch (DateTimeParseException e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
