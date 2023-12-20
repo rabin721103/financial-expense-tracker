@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ExpenseDto {
     private String expenseName;
-    private String expenseCategory;
+    private Long expenseCategoryId;
     private Double expenseAmount;
     private String description;
 }

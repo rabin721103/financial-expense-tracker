@@ -1,6 +1,6 @@
 package com.practice.financialtracker.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.practice.financialtracker.expensecategory.ExpenseCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,8 +22,9 @@ public class Expense {
     private Long expenseId;
     @Column
     private String expenseName;
-    @Column
-    private String expenseCategory;
+    @ManyToOne
+    @JoinColumn(name = "expense_category_id", nullable = false)
+    private ExpenseCategory expenseCategory;
     @Column
     private Double expenseAmount;
     @Column
@@ -33,13 +34,15 @@ public class Expense {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-
     private User user;
+
     public Expense(User user, ExpenseDto expenseDto) {
         this.user = user;
         this.expenseName = expenseDto.getExpenseName();
         this.expenseAmount = expenseDto.getExpenseAmount();
-        this.expenseCategory = expenseDto.getExpenseCategory();
+        ExpenseCategory newExpenseCategory = new ExpenseCategory();
+        newExpenseCategory.setExpenseCategoryId(expenseDto.getExpenseCategoryId());
+        this.expenseCategory = newExpenseCategory;
         this.description = expenseDto.getDescription();
 
     }

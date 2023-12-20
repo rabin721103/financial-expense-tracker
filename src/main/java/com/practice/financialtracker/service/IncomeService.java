@@ -14,15 +14,25 @@ public class IncomeService {
     public IncomeService(IncomeRepository incomeRepository) {
         this.incomeRepository = incomeRepository;
     }
+
+    //    public List<IncomeResponse> getAllIncome() {
+//        List<Income> incomes = incomeRepository.findAll();
+//        return incomes.stream().map(income -> new IncomeResponse(income.getIncomeId(), income.getIncomeName(), income.getIncomeCategory(), income.getIncomeAmount(), income.getDescription(), income.getDate())).toList();
+//    }
     public List<IncomeResponse> getAllIncome() {
         List<Income> incomes = incomeRepository.findAll();
-        return incomes.stream().map(income -> new IncomeResponse(income.getIncomeId(), income.getIncomeName(), income.getIncomeCategory(), income.getIncomeAmount(), income.getDescription(), income.getDate())).toList();
+        return incomes.stream().map(IncomeResponse::new).toList();
     }
 
-    public IncomeDto addIncome(Income newIncome) {
+    //    public IncomeDto addIncome(Income newIncome) {
+//        Income savedIncome = incomeRepository.save(newIncome);
+//        return new IncomeDto(savedIncome.getIncomeName(), savedIncome.getIncomeCategory(), savedIncome.getIncomeAmount(), savedIncome.getDescription());
+//    }
+    public IncomeResponse addIncome(Income newIncome) {
         Income savedIncome = incomeRepository.save(newIncome);
-        return new IncomeDto(savedIncome.getIncomeName(), savedIncome.getIncomeCategory(),savedIncome.getIncomeAmount(),savedIncome.getDescription());
+        return new IncomeResponse(savedIncome);
     }
+
     public void deleteIncome(Long incomeId) {
         Optional<Income> income = incomeRepository.findById(incomeId);
 

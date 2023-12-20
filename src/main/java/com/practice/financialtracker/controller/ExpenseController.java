@@ -86,8 +86,8 @@ public class ExpenseController {
     }
 
     @PostMapping()
-    public ResponseEntity<ResponseWrapper<ExpenseDto>> addExpense(HttpServletRequest request, @RequestBody ExpenseDto expenseDto){
-        ResponseWrapper<ExpenseDto> response = new ResponseWrapper<>();
+    public ResponseEntity<ResponseWrapper<ExpenseResponse>> addExpense(HttpServletRequest request, @RequestBody ExpenseDto expenseDto){
+        ResponseWrapper<ExpenseResponse> response = new ResponseWrapper<>();
         try{
             Long decodedUserId = (Long) request.getAttribute("userId");
             User user = new User();

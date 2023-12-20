@@ -14,8 +14,19 @@ import java.time.LocalDateTime;
 public class IncomeResponse {
     private Long incomeId;
     private String incomeName;
-    private String incomeCategory;
+    private Long incomeCategoryId;
+    private String incomeCategoryName;
     private Double incomeAmount;
     private String description;
     private LocalDateTime date;
+
+    public IncomeResponse(Income income) {
+        this.incomeId = income.getIncomeId();
+        this.incomeName = income.getIncomeName();
+        this.incomeAmount = income.getIncomeAmount();
+        this.description = income.getDescription();
+        this.date = income.getDate();
+        this.incomeCategoryId = income.getIncomeCategory().getIncomeCategoryId();
+        this.incomeCategoryName = income.getIncomeCategory().getCategoryName();
+    }
 }

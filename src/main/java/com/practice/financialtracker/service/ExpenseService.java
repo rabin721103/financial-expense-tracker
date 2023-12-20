@@ -21,7 +21,7 @@ public class ExpenseService {
 
     public List<ExpenseResponse> getAllExpense() {
         List<Expense> expenses = expenseRepository.findAll();
-        return expenses.stream().map(expense -> new ExpenseResponse(expense.getExpenseId(), expense.getExpenseName(), expense.getExpenseCategory(), expense.getExpenseAmount(), expense.getDescription(), expense.getDate())).toList();
+        return expenses.stream().map(ExpenseResponse::new).toList();
     }
 
     public Expense getExpenseById(Long id) throws ExpenseNotFoundException {
@@ -37,9 +37,9 @@ public class ExpenseService {
         return expenses.stream().map(expense -> new Expense(expense.getExpenseId(), expense.getExpenseName(), expense.getExpenseCategory(), expense.getExpenseAmount(), expense.getDescription(), expense.getDate(),expense.getUser())).toList();
     }
 
-    public ExpenseDto addExpense(Expense newExpense) {
+    public ExpenseResponse addExpense(Expense newExpense) {
         Expense savedExpense = expenseRepository.save(newExpense);
-        return new ExpenseDto(savedExpense.getExpenseName(), savedExpense.getExpenseCategory(),savedExpense.getExpenseAmount(),savedExpense.getDescription());
+        return new ExpenseResponse(savedExpense);
     }
 
     public void deleteExpenseById(Long expenseId) {

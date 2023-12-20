@@ -37,8 +37,8 @@ public class IncomeController {
         }
     }
     @PostMapping()
-    public ResponseEntity<ResponseWrapper<IncomeDto>> addIncome(HttpServletRequest request, @RequestBody IncomeDto incomeDto){
-        ResponseWrapper<IncomeDto> response = new ResponseWrapper<>();
+    public ResponseEntity<ResponseWrapper<IncomeResponse>> addIncome(HttpServletRequest request, @RequestBody IncomeDto incomeDto){
+        ResponseWrapper<IncomeResponse> response = new ResponseWrapper<>();
         try{
             Long decodedUserId = (Long) request.getAttribute("userId");
             User user = new User();
