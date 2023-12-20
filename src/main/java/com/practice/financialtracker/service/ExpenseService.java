@@ -2,6 +2,8 @@ package com.practice.financialtracker.service;
 
 import com.practice.financialtracker.exceptions.ExpenseNotFoundException;
 import com.practice.financialtracker.model.Expense;
+import com.practice.financialtracker.model.ExpenseDto;
+import com.practice.financialtracker.model.ExpenseResponse;
 import com.practice.financialtracker.repository.ExpenseRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,9 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
     }
 
-    public List<Expense> getAllExpense() {
+    public List<ExpenseResponse> getAllExpense() {
         List<Expense> expenses = expenseRepository.findAll();
-        return expenses.stream().map(expense -> new Expense(expense.getExpenseId(), expense.getExpenseName(), expense.getExpenseCategory(), expense.getExpenseAmount(), expense.getDescription(), expense.getDate())).toList();
+        return expenses.stream().map(expense -> new ExpenseResponse(expense.getExpenseId(), expense.getExpenseName(), expense.getExpenseCategory(), expense.getExpenseAmount(), expense.getDescription(), expense.getDate())).toList();
     }
 
     public Expense getExpenseById(Long id) throws ExpenseNotFoundException {
@@ -32,14 +34,12 @@ public class ExpenseService {
 
     public List<Expense> getExpenseByName(String name) {
         List<Expense> expenses = expenseRepository.findExpenseByName(name);
-        return expenses.stream().map(expense -> new Expense(expense.getExpenseId(), expense.getExpenseName(), expense.getExpenseCategory(), expense.getExpenseAmount(), expense.getDescription(), expense.getDate())).toList();
+        return expenses.stream().map(expense -> new Expense(expense.getExpenseId(), expense.getExpenseName(), expense.getExpenseCategory(), expense.getExpenseAmount(), expense.getDescription(), expense.getDate(),expense.getUser())).toList();
     }
 
-    public Expense addExpense(Expense expense) {
-
-
-        expenseRepository.save(expense);
-        return expense;
+    public ExpenseDto addExpense(Expense newExpense) {
+        Expense savedExpense = expenseRepository.save(newExpense);
+        return new ExpenseDto(savedExpense.getExpenseName(), savedExpense.getExpenseCategory(),savedExpense.getExpenseAmount(),savedExpense.getDescription());
     }
 
     public void deleteExpenseById(Long expenseId) {

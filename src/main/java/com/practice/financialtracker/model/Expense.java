@@ -1,5 +1,6 @@
 package com.practice.financialtracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,4 +31,16 @@ public class Expense {
     @Column
     private LocalDateTime date = LocalDateTime.now();
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+
+    private User user;
+    public Expense(User user, ExpenseDto expenseDto) {
+        this.user = user;
+        this.expenseName = expenseDto.getExpenseName();
+        this.expenseAmount = expenseDto.getExpenseAmount();
+        this.expenseCategory = expenseDto.getExpenseCategory();
+        this.description = expenseDto.getDescription();
+
+    }
 }

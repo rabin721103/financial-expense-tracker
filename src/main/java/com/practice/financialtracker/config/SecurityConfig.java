@@ -38,7 +38,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer -> configurer.requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/user/**").permitAll()
-//                .requestMatchers("/api/user/allUsers").permitAll()
+                        .requestMatchers("api/expenses/**").permitAll()
+                        .requestMatchers("/api/wallet/**").permitAll()
+                .requestMatchers("/api/incomes/**").permitAll()
+                .requestMatchers("/api/expenses/category/**").permitAll()
+
         );
         //disable cross site resource forgery(CSRF)
         http.csrf(AbstractHttpConfigurer::disable);
