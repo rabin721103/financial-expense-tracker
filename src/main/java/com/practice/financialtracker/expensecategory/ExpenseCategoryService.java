@@ -1,5 +1,6 @@
 package com.practice.financialtracker.expensecategory;
 
+import com.practice.financialtracker.exceptions.CustomException;
 import com.practice.financialtracker.model.Income;
 import com.practice.financialtracker.model.IncomeDto;
 import com.practice.financialtracker.model.IncomeResponse;
@@ -20,6 +21,11 @@ public class ExpenseCategoryService {
         List<ExpenseCategory> expenseCategories = expenseCategoryRepository.findAll();
         return expenseCategories.stream().map(expenseCategory -> new ExpenseCategoryResponse( expenseCategory.getExpenseCategoryId(),expenseCategory.getName(),expenseCategory.getExpenseLimit())).toList();
     }
+
+    public ExpenseCategory findExpenseCategoryByName(String name) {
+        return expenseCategoryRepository.findExpenseCategoryByName(name);
+    }
+
     public ExpenseCategoryDto addExpenseCategory(ExpenseCategory newExpenseCategory) {
         ExpenseCategory category = expenseCategoryRepository.save(newExpenseCategory);
         return new ExpenseCategoryDto(category.getName(),category.getExpenseLimit());

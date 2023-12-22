@@ -17,7 +17,7 @@ public class IncomeCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long incomeCategoryId;
-    @Column
+    @Column(name = "income_category_name", nullable = false)
     private String categoryName;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

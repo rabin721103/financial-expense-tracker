@@ -17,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -36,12 +39,16 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(configurer -> configurer.requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/user/**").permitAll()
-                        .requestMatchers("api/expenses/**").permitAll()
-                        .requestMatchers("/api/wallet/**").permitAll()
-                .requestMatchers("/api/incomes/**").permitAll()
-                .requestMatchers("/api/expenses/category/**").permitAll()
+        http
+                .cors(c -> c.configurationSource(corsFilter()))
+                .authorizeHttpRequests(configurer ->
+                configurer.requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers("api/expenses/**").authenticated()
+                        .requestMatchers("/api/wallet/**").authenticated()
+                .requestMatchers("/api/incomes/**").authenticated()
+                .requestMatchers("/api/expenses/category/**").authenticated()
+                        .requestMatchers("/api/incomes/category/**").authenticated()
 
         );
         //disable cross site resource forgery(CSRF)
@@ -69,6 +76,18 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 }

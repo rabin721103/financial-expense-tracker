@@ -12,4 +12,5 @@ public interface ExpenseRepository extends JpaRepository<Expense,Long> {
     @Query("SELECT c FROM Expense c WHERE c.expenseName = ?1")
     List<Expense> findExpenseByName(String expenseName);
 
+
 }

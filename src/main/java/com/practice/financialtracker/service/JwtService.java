@@ -1,11 +1,14 @@
 package com.practice.financialtracker.service;
 
+import com.practice.financialtracker.exceptions.CustomException;
 import com.practice.financialtracker.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +29,19 @@ public class JwtService {
         claims.put("email", user.getEmail());
         claims.put("profession", user.getProfession());
         return createToken(claims);
+    }
+
+    public String extractToken(HttpServletRequest request) {
+        try {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("auth")) {
+                    return cookie.getValue();
+                }
+            }
+        } catch (NullPointerException ex) {
+            return null;
+        }
+        return null;
     }
 
     public String createToken(
