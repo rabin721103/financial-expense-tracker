@@ -1,5 +1,6 @@
 package com.practice.financialtracker.service;
 
+import com.practice.financialtracker.exceptions.CustomException;
 import com.practice.financialtracker.exceptions.ExpenseNotFoundException;
 import com.practice.financialtracker.model.Expense;
 import com.practice.financialtracker.model.ExpenseDto;
@@ -19,17 +20,21 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
     }
 
-    public List<ExpenseResponse> getAllExpense() {
-        List<Expense> expenses = expenseRepository.findAll();
-        return expenses.stream().map(ExpenseResponse::new).toList();
-    }
+//    public List<ExpenseResponse> getAllExpense() {
+//        List<Expense> expenses = expenseRepository.findAll();
+//        return expenses.stream().map(ExpenseResponse::new).toList();
+//    }
 
-    public Expense getExpenseById(Long id) throws ExpenseNotFoundException {
-        Optional<Expense> expense = expenseRepository.findById(id);
-        if (!expense.isPresent()) {
-            throw new ExpenseNotFoundException("Expense does not exist...");
+    public Expense getExpenseById(long id, long userId) {
+        Optional<Expense> expense = expenseRepository.getExpenseById(id, userId);
+        if (expense.isEmpty()) {
+            throw new CustomException("Expense does not exist...");
         }
         return expense.get();
+    }
+    public List<ExpenseResponse> getAllExpense(Long id) {
+        List<Expense> expenses = expenseRepository.getExpenseByUserId(id);
+        return expenses.stream().map(ExpenseResponse::new).toList();
     }
 
     public List<Expense> getExpenseByName(String name) {

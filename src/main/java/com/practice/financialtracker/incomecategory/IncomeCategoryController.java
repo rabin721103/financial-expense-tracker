@@ -37,13 +37,13 @@ public class IncomeCategoryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<ResponseWrapper<List<IncomeCategoryResponse>>> getAllIncomeCategoriesByUserId(@PathVariable Long userId) {
+    @GetMapping()
+    public ResponseEntity<ResponseWrapper<List<IncomeCategoryResponse>>> getAllIncomeCategoriesByUserId(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
         ResponseWrapper<List<IncomeCategoryResponse>> response = new ResponseWrapper<>();
         try {
             // Assuming you have a method in your service to get income categories by user ID
             List<IncomeCategoryResponse> incomeCategories = incomeCategoryService.getAllIncomeCategoriesByUserId(userId);
-
             response.setStatusCode(HttpStatus.OK.value());
             response.setSuccess(true);
             response.setMessage("Income Categories retrieved successfully");

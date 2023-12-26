@@ -4,6 +4,7 @@ import com.practice.financialtracker.model.User;
 import com.practice.financialtracker.model.UserDto;
 import com.practice.financialtracker.service.UserService;
 import com.practice.financialtracker.utils.ResponseWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,67 +22,29 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<ResponseWrapper<UserDto>> insertUser(@Valid @RequestBody User user) {
+    @GetMapping("/profile")
+    public ResponseEntity<ResponseWrapper<UserDto>> getProfile(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        UserDto user = userService.getUserById(userId);
         ResponseWrapper<UserDto> response = new ResponseWrapper<>();
-        try {
-            UserDto newUser = userService.registerUser(user);
-            response.setStatusCode(HttpStatus.OK.value());
+        if (user != null) {
+            response.setStatusCode(200);
+            response.setMessage("User retrieved successfully");
             response.setSuccess(true);
-            response.setMessage("User registered successfully");
-            response.setResponse(newUser);
+            response.setResponse(user);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.setStatusCode(HttpStatus.NOT_FOUND.value());
-            response.setMessage("Internal Server Error");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-    }
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<ResponseWrapper<UserDto>> getUserById(@PathVariable("userId") long userId) {
-        UserDto userDto = userService.getUserById(userId);
-        ResponseWrapper<UserDto> response = new ResponseWrapper<>();
-        try {
-            if (userDto != null) {
-                response.setStatusCode(HttpStatus.OK.value());
-                response.setMessage("User retrieved successfully");
-                response.setSuccess(true);
-                response.setResponse(userDto);
-                return ResponseEntity.ok(response);
-            } else {
-                response.setStatusCode(HttpStatus.NOT_FOUND.value());
-                response.setMessage("User not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-        } catch (Exception ex) {
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setMessage("Internal Server Error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    @GetMapping("/allUsers")
-    public ResponseEntity<ResponseWrapper<List<UserDto>>> getAllUser() {
-        ResponseWrapper<List<UserDto>> response = new ResponseWrapper<>();
-        try {
-            List<UserDto> users = userService.getAllUser();
-            response.setStatusCode(HttpStatus.OK.value());
-            response.setSuccess(true);
-            response.setMessage("Users retrieved successfully");
-            response.setResponse(users);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.setStatusCode(HttpStatus.NOT_FOUND.value());
+        } else {
+            response.setStatusCode(400);
+            response.setMessage("User could not be found");
             response.setSuccess(false);
-            response.setMessage("Internal Server Error");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.ok(response);
         }
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<ResponseWrapper<UserDto>> updateUser(@PathVariable("userId") Long userId, @Valid @RequestBody User user) {
 
+    @PutMapping()
+    public ResponseEntity<ResponseWrapper<UserDto>> updateUser(@Valid @RequestBody User user, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
         UserDto updatedUserDto = userService.updateUser(userId, user);
         ResponseWrapper<UserDto> response = new ResponseWrapper<>();
         try {

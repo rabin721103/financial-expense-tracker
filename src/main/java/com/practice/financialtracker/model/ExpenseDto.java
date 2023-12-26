@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExpenseDto {
+
     private String expenseName;
     private Long expenseCategoryId;
     private Double expenseAmount;

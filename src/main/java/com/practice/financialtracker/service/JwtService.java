@@ -39,9 +39,9 @@ public class JwtService {
                 }
             }
         } catch (NullPointerException ex) {
-            return null;
+            return "";
         }
-        return null;
+        return "";
     }
 
     public String createToken(

@@ -1,8 +1,10 @@
 package com.practice.financialtracker.expensecategory;
 
+import com.practice.financialtracker.incomecategory.IncomeCategoryResponse;
 import com.practice.financialtracker.model.User;
 import com.practice.financialtracker.utils.ResponseWrapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,26 @@ public class ExpenseCategoryController {
             response.setSuccess(true);
             response.setMessage("Expense Categories retrieved successfully");
             response.setResponse( expenseCategoryService.getAllExpenseCategory());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.setStatusCode(HttpStatus.NOT_FOUND.value());
+            response.setSuccess(false);
+            response.setMessage("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity<ResponseWrapper<List<ExpenseCategoryResponse>>> getAllExpenseCategoriesByUserId(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        ResponseWrapper<List<ExpenseCategoryResponse>> response = new ResponseWrapper<>();
+        try {
+            // Assuming you have a method in your service to get income categories by user ID
+            List<ExpenseCategoryResponse> expenseCategories = expenseCategoryService.getAllExpenseCategoriesByUserId(userId);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setSuccess(true);
+            response.setMessage("Expense Categories retrieved successfully");
+            response.setResponse(expenseCategories);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.setStatusCode(HttpStatus.NOT_FOUND.value());

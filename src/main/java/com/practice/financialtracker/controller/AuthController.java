@@ -12,6 +12,7 @@ import com.practice.financialtracker.utils.ResponseWrapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,7 +35,7 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
-    @PostMapping("/user/login")
+    @PostMapping("/login")
     public ResponseEntity<TokenResponse> authenticateAndGetToken(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         try {
 
@@ -63,23 +64,23 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<ResponseWrapper<UserDto>> getProfile(HttpServletRequest request) {
-        Long userId = (Long) request.getAttribute("userId");
-        System.out.println(userId);
-        UserDto user = userService.getUserById(userId);
+
+    @PostMapping("/register")
+    public ResponseEntity<ResponseWrapper<UserDto>> insertUser(@Valid @RequestBody User user) {
         ResponseWrapper<UserDto> response = new ResponseWrapper<>();
-        if (user != null) {
-            response.setStatusCode(200);
-            response.setMessage("User retrieved successfully");
+        try {
+            UserDto newUser = userService.registerUser(user);
+            response.setStatusCode(HttpStatus.OK.value());
             response.setSuccess(true);
-            response.setResponse(user);
+            response.setMessage("User registered successfully");
+            response.setResponse(newUser);
             return ResponseEntity.ok(response);
-        } else {
-            response.setStatusCode(400);
-            response.setMessage("User could not be found");
-            response.setSuccess(false);
-            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.setStatusCode(HttpStatus.NOT_FOUND.value());
+            response.setMessage("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+
+
 }

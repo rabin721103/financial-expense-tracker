@@ -33,24 +33,26 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
         this.customUserDetailsService = customUserDetailsService;
     }
+
     @Bean
     public UserDetailsService userDetailsService() {
         return new CustomUserDetailsService();
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(c -> c.configurationSource(corsFilter()))
                 .authorizeHttpRequests(configurer ->
-                configurer.requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/user/**").authenticated()
-                        .requestMatchers("api/expenses/**").authenticated()
-                        .requestMatchers("/api/wallet/**").authenticated()
-                .requestMatchers("/api/incomes/**").authenticated()
-                .requestMatchers("/api/expenses/category/**").authenticated()
-                        .requestMatchers("/api/incomes/category/**").authenticated()
+                        configurer.requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/user/**").authenticated()
+                                .requestMatchers("api/expenses/**").authenticated()
+                                .requestMatchers("/api/wallet/**").authenticated()
+                                .requestMatchers("/api/incomes/**").authenticated()
+                                .requestMatchers("/api/expenses/category/**").authenticated()
+                                .requestMatchers("/api/incomes/category/**").authenticated()
 
-        );
+                );
         //disable cross site resource forgery(CSRF)
         http.csrf(AbstractHttpConfigurer::disable);
 
