@@ -95,36 +95,11 @@ public class IncomeController {
         }
     }
 
-//    @PutMapping( "/{incomeId}")
-//    public ResponseEntity<Income> updateIncome(@PathVariable("incomeId") Long oldIncomeId, @RequestBody Income income) {
-//        ResponseWrapper<Income> response = new ResponseWrapper<>();
-//        try {
-//            Income newIncome = incomeService.updateIncome(oldIncomeId, income).getBody();
-//            if (newIncome != null) {
-//                response.setStatusCode(HttpStatus.OK.value());
-//                response.setSuccess(true);
-//                response.setMessage("Income updated successfully");
-//                response.setResponse(newIncome);
-//                return ResponseEntity.ok(response.getResponse());
-//            } else {
-//                response.setStatusCode(HttpStatus.NOT_FOUND.value());
-//                response.setMessage("User not Found");
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.getResponse());
-//            }
-//
-//        } catch (Exception e) {
-//            response.setStatusCode(HttpStatus.NOT_FOUND.value());
-//            response.setMessage("Internal Server Error");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.getResponse());
-//        }
-//    }
-
     @PutMapping("/{incomeId}")
-    public ResponseEntity<ResponseWrapper<IncomeResponse>> updateIncome(@PathVariable("incomeId") Long oldIncomeId, @RequestBody Income income) {
+    public ResponseEntity<ResponseWrapper<IncomeResponse>> updateIncome(@PathVariable("incomeId") Long oldIncomeId, @RequestBody IncomeDto incomeDto) {
         ResponseWrapper<IncomeResponse> response = new ResponseWrapper<>();
-        System.out.println("sdafdah");
         try {
-            IncomeResponse updatedIncome = incomeService.updateIncome(oldIncomeId, income);
+            IncomeResponse updatedIncome = incomeService.updateIncome(oldIncomeId, incomeDto);
             response.setStatusCode(HttpStatus.OK.value());
             response.setSuccess(true);
             response.setMessage("Income updated successfully");
@@ -138,5 +113,42 @@ public class IncomeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @GetMapping("/incomeData")
+    public ResponseEntity<ResponseWrapper<List<IncomeSummary>>> getData(HttpServletRequest request){
+        ResponseWrapper<List<IncomeSummary>> response = new ResponseWrapper<>();
+        try{
+            Long id = (Long) request.getAttribute("userId");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setSuccess(true);
+            response.setMessage("Income Data retrieved Successfully");
+            response.setResponse(incomeService.getDataByCategory(id));
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage("Internal Server Error");
+            response.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    @GetMapping("/totalIncome")
+    public ResponseEntity<ResponseWrapper<Double>> getTotalAmount(HttpServletRequest request){
+        ResponseWrapper<Double> response = new ResponseWrapper<>();
+        try{
+            Long id = (Long) request.getAttribute("userId");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setSuccess(true);
+            response.setMessage("Data retrieved Successfully");
+            Double totalAmount = incomeService.getTotalIncomeAmount(id);
+            response.setResponse(totalAmount);
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage("Internal Server Error");
+            response.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 }

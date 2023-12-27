@@ -13,4 +13,9 @@ public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory
     ExpenseCategory findExpenseCategoryByName(String name);
 
     List<ExpenseCategory> findExpenseCategoriesByUserUserId(Long userId);
+
+    @Query(value = "select * from expense_category where expense_category_id = :expenseCategoryId ",nativeQuery = true)
+    ExpenseCategory findByExpenseCategoryId(Long expenseCategoryId);
+
+
 }

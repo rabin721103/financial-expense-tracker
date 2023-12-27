@@ -1,9 +1,6 @@
 package com.practice.financialtracker.controller;
 
-import com.practice.financialtracker.model.Expense;
-import com.practice.financialtracker.model.ExpenseDto;
-import com.practice.financialtracker.model.ExpenseResponse;
-import com.practice.financialtracker.model.User;
+import com.practice.financialtracker.model.*;
 import com.practice.financialtracker.service.ExpenseService;
 import com.practice.financialtracker.utils.ResponseWrapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -64,12 +62,12 @@ public class ExpenseController {
     }
 
     @GetMapping("/{expenseId}")
-    public ResponseEntity<ResponseWrapper<Expense>> getExpenseById(@PathVariable("expenseId") long expenseId, HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<ExpenseDto>> getExpenseById(@PathVariable("expenseId") long expenseId, HttpServletRequest request) {
 
-        ResponseWrapper<Expense> response = new ResponseWrapper<>();
+        ResponseWrapper<ExpenseDto> response = new ResponseWrapper<>();
 
         Long userId = (Long) request.getAttribute("userId");
-        Expense expense = expenseService.getExpenseById(expenseId, userId);
+        ExpenseDto expense = expenseService.getExpenseById(expenseId, userId);
         response.setStatusCode(HttpStatus.OK.value());
         response.setSuccess(true);
         response.setMessage("expense retrieved successfully");
@@ -105,7 +103,7 @@ public class ExpenseController {
     @PostMapping()
     public ResponseEntity<ResponseWrapper<ExpenseResponse>> addExpense(HttpServletRequest request, @RequestBody ExpenseDto expenseDto) {
         ResponseWrapper<ExpenseResponse> response = new ResponseWrapper<>();
-        try {
+
             Long decodedUserId = (Long) request.getAttribute("userId");
             User user = new User();
             user.setUserId(decodedUserId);
@@ -115,11 +113,6 @@ public class ExpenseController {
             response.setMessage("expense added successfully");
             response.setResponse(expenseService.addExpense(newExpense));
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.setStatusCode(500);
-            response.setMessage("Internal Server Error");
-            return ResponseEntity.status(500).body(response);
-        }
     }
 
 
@@ -139,28 +132,88 @@ public class ExpenseController {
         }
     }
 
-    @PutMapping(path = "{expenseId}")
-    public ResponseEntity<Expense> updateExpense(@PathVariable("expenseId") Long oldExpenseId, @RequestBody Expense expense) {
-        ResponseWrapper<Expense> response = new ResponseWrapper<>();
+    @PutMapping("/{expenseId}")
+    public ResponseEntity<ResponseWrapper<ExpenseResponse>> updateExpense(@PathVariable("expenseId") Long oldExpenseId, @RequestBody ExpenseDto expenseDto) {
+        ResponseWrapper<ExpenseResponse> response = new ResponseWrapper<>();
         try {
-            Expense newExpense = expenseService.updateExpense(oldExpenseId, expense).getBody();
-            if (newExpense != null) {
-                response.setStatusCode(HttpStatus.OK.value());
-                response.setSuccess(true);
-                response.setMessage("User updated successfully");
-                response.setResponse(newExpense);
-                return ResponseEntity.ok(response.getResponse());
-            } else {
-                response.setStatusCode(HttpStatus.NOT_FOUND.value());
-                response.setMessage("User not Found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.getResponse());
-            }
+            ExpenseResponse updateExpense = expenseService.updateExpense(oldExpenseId, expenseDto);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setSuccess(true);
+            response.setMessage("Income updated successfully");
+            response.setResponse(updateExpense);
+            return ResponseEntity.ok(response);
+
 
         } catch (Exception e) {
-            response.setStatusCode(HttpStatus.NOT_FOUND.value());
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setMessage("Internal Server Error");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.getResponse());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @GetMapping("/expenseData")
+    public ResponseEntity<ResponseWrapper<List<ExpenseSummary>>> getData(HttpServletRequest request){
+        ResponseWrapper<List<ExpenseSummary>> response = new ResponseWrapper<>();
+        try{
+            Long id = (Long) request.getAttribute("userId");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setSuccess(true);
+            response.setMessage("Data retrieved Successfully");
+            response.setResponse(expenseService.getData(id));
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage("Error");
+            response.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/totalExpense")
+    public ResponseEntity<ResponseWrapper<Double>> getTotalAmount(HttpServletRequest request){
+        ResponseWrapper<Double> response = new ResponseWrapper<>();
+        try{
+            Long id = (Long) request.getAttribute("userId");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setSuccess(true);
+            response.setMessage("Data retrieved Successfully");
+            Double totalAmount = expenseService.getTotalExpenseAmount(id);
+            response.setResponse(totalAmount);
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage("ERROR");
+            response.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+//    @GetMapping("/totalExpense/{expenseCategoryId}")
+//    public ResponseEntity<ResponseWrapper<Double>> getTotalCategoryAmount(@PathVariable Long expenseCategoryId, HttpServletRequest request){
+//        ResponseWrapper<Double> response = new ResponseWrapper<>();
+//        try{
+//            Long id = (Long) request.getAttribute("userId");
+//            if(expenseService.getTotalCategoryAmount(id, expenseCategoryId).isEmpty()) {
+//                response.setStatusCode(HttpStatus.OK.value());
+//                response.setSuccess(true);
+//                response.setMessage("Data retrieved Successfully");
+//                Double totalAmount = 0.0;
+//                response.setResponse(totalAmount);
+//                return ResponseEntity.ok(response);
+//            }else {
+//                response.setStatusCode(HttpStatus.OK.value());
+//                response.setSuccess(true);
+//                response.setMessage("Data retrieved Successfully");
+//                Optional<Double> totalAmount = expenseService.getTotalCategoryAmount(id, expenseCategoryId);
+//                response.setResponse(totalAmount);
+//                return ResponseEntity.ok(response);
+//            }
+//        }catch(Exception e){
+//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            response.setMessage("ERROR");
+//            response.setSuccess(false);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
+
 
 }

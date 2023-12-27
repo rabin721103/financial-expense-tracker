@@ -2,11 +2,13 @@ package com.practice.financialtracker.service;
 
 import com.practice.financialtracker.exceptions.CustomException;
 import com.practice.financialtracker.exceptions.ExpenseNotFoundException;
+import com.practice.financialtracker.incomecategory.IncomeCategory;
 import com.practice.financialtracker.model.*;
 import com.practice.financialtracker.repository.IncomeRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,39 +47,19 @@ public class IncomeService {
             incomeRepository.deleteById(incomeId);
         }
     }
-//    public ResponseEntity<Income> updateIncome(Long id, Income income){
-//        Optional<Income> optionalIncome = incomeRepository.findById(id);
-//
-//        if (optionalIncome.isPresent()) {
-//            Income existingIncome = optionalIncome.get();
-//            // Update properties of the existing expense with values from the updated user
-//            existingIncome.setIncomeId(id);
-//            existingIncome.setIncomeName(income.getIncomeName());
-//            existingIncome.setIncomeCategory(income.getIncomeCategory());
-//            existingIncome.setIncomeAmount(income.getIncomeAmount());
-//            existingIncome.setDate(income.getDate());
-//            existingIncome.setDescription(income.getDescription());
-//
-//            Income newIncome = incomeRepository.save(existingIncome);
-//            return ResponseEntity.ok(newIncome);
-//
-//        } else {
-//            throw new CustomException("Income does not exist...");
-//        }
-//
-//    }
 
-    public IncomeResponse updateIncome(Long id, Income income) {
+    public IncomeResponse updateIncome(Long id, IncomeDto income) {
         Optional<Income> optionalIncome = incomeRepository.findById(id);
 
         if (optionalIncome.isPresent()) {
             Income existingIncome = optionalIncome.get();
+            IncomeCategory incomeCategory = new IncomeCategory();
+            incomeCategory.setIncomeCategoryId(income.getIncomeCategoryId());
             // Update properties of the existing income with values from the updated user
             existingIncome.setIncomeId(id);
             existingIncome.setIncomeName(income.getIncomeName());
-            existingIncome.setIncomeCategory(income.getIncomeCategory());
+            existingIncome.setIncomeCategory(incomeCategory);
             existingIncome.setIncomeAmount(income.getIncomeAmount());
-            existingIncome.setDate(income.getDate());
             existingIncome.setDescription(income.getDescription());
 
             Income updatedIncome = incomeRepository.save(existingIncome);
@@ -86,6 +68,27 @@ public class IncomeService {
         } else {
             throw new CustomException("Income does not exist...");
         }
+    }
+
+    public List<IncomeSummary> getDataByCategory(Long id){
+        User user = new User();
+        user.setUserId(id);
+        List<Object[]> result = incomeRepository.getMonthlyIncomeSummaryByCategory(user);
+        List<IncomeSummary> dtos = new ArrayList<>();
+        for (Object[] row : result) {
+            Integer year = (Integer) row[0];
+            Integer month = (Integer) row[1];
+            String category = (String) row[2];
+            Double totalAmount = (Double) row[3];
+
+            IncomeSummary dto = new IncomeSummary(year, month, category, totalAmount);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    public Double getTotalIncomeAmount(Long userId){
+        return incomeRepository.getTotalIncomeByUserId(userId);
     }
 
 }
