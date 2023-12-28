@@ -21,23 +21,6 @@ public class ExpenseController {
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
     }
-
-    //    @GetMapping("/allExpenses")
-//    public ResponseEntity<ResponseWrapper<List<ExpenseResponse>>> getAllExpenses() {
-//        ResponseWrapper<List<ExpenseResponse>> response = new ResponseWrapper<>();
-//        try {
-//            response.setStatusCode(HttpStatus.OK.value());
-//            response.setSuccess(true);
-//            response.setMessage("Expense retrieved successfully");
-//            response.setResponse( expenseService.getAllExpense());
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            response.setStatusCode(HttpStatus.NOT_FOUND.value());
-//            response.setSuccess(false);
-//            response.setMessage("Internal Server Error");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-//        }
-//    }
     @GetMapping("/allExpenses")
     public ResponseEntity<ResponseWrapper<List<ExpenseResponse>>> getAllExpense(HttpServletRequest request) {
         ResponseWrapper<List<ExpenseResponse>> response = new ResponseWrapper<>();
@@ -116,7 +99,7 @@ public class ExpenseController {
     }
 
 
-    @DeleteMapping(path = "{expenseId}")
+    @DeleteMapping( "/{expenseId}")
     public ResponseEntity<ResponseWrapper<Expense>> deleteExpenseById(@PathVariable("expenseId") Long expenseId) {
         try {
             expenseService.deleteExpenseById(expenseId);

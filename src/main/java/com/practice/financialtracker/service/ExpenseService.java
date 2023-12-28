@@ -48,9 +48,15 @@ public class ExpenseService {
             throw new CustomException("Expense category with ID " + categoryId + " not found.");
         }
         double maxLimit = expenseCategory.getExpenseLimit();
-        Optional<Double> totalExpense = expenseRepository.getTotalExpenseByCategoryIdAndUserId(userId, categoryId);
+        Optional<Double> optTotalExpense = expenseRepository.getTotalExpenseByCategoryIdAndUserId(userId, categoryId);
         String categoryName = expenseCategory.getName();
-        if (totalExpense.isPresent() && ((totalExpense.get() + expense.getExpenseAmount()) > maxLimit)) {
+        Double totalExpense = 0.0;
+
+        if (optTotalExpense.isPresent()) {
+            totalExpense = optTotalExpense.get();
+        }
+
+        if ((totalExpense + expense.getExpenseAmount()) > maxLimit) {
             throw new CustomException("Your Expense exceeds the maximum expense limit for " + categoryName);
         }
         Expense newExpense = expenseRepository.save(expense);
@@ -117,7 +123,6 @@ public class ExpenseService {
 
         return expenseAmount;
     }
-
 
 
 }
